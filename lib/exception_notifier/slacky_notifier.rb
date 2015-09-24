@@ -69,7 +69,7 @@ module ExceptionNotifier
             title: "Error message",
             value: exception.message,
             short: false
-          }
+          },
           {
             title: "Trace",
             value: exception.backtrace.join("\n"),
