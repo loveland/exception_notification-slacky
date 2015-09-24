@@ -21,7 +21,7 @@ module ExceptionNotifier
                         Rack::Request.new(env)
                       end
       message     = 'Exception Occured!'
-      attachments = build_attachemnt(exception, options)
+      attachments = build_attachment(exception, options)
       @message_opts.merge!(attachments: [attachments])
       @notifier.ping(message, @message_opts) if valid?
     rescue LoadError, NameError
@@ -34,11 +34,11 @@ module ExceptionNotifier
       !@notifier.nil?
     end
 
-    def build_attachemnt(exception, options = {})
+    def build_attachment(exception, options = {})
       {
         fallback: "#{exception.class} #{exception.message}",
         color: "danger",
-        title: "[ERROR] #{exception.class}",
+        title: "#{exception.class}",
         fields: [
           {
             title: "Host",
@@ -56,20 +56,25 @@ module ExceptionNotifier
             short: true
           },
           {
-            title: "IP Address",
-            value: @request.ip,
-            short: true
-          },
-          {
-            title: "Occurred on",
-            value: (exception.backtrace.first rescue nil),
+            title: "Parameters",
+            value: @request.parameters.inspect,
             short: false
           },
+          #{
+          #  title: "IP Address",
+          #  value: @request.ip,
+          #  short: true
+          #},
           {
             title: "Error message",
             value: exception.message,
             short: false
           }
+          {
+            title: "Trace",
+            value: exception.backtrace.join("\n"),
+            short: false
+          },
         ]
       }
     end
